@@ -1,0 +1,115 @@
+* Building Abstractions with Procedures
+
+** The elements of programming
+We can combine simple ideas into complex one using this:
+- Primitive expressions: Simplest entities the language is concerned with
+- Means of combination: Compound elements built from simpler ones
+- Means of abstraction: How compound elements can be named and manipulated as units
+
+*** The substitution model
+The interpreter evaluates the element of the combination and applies
+the procedure to the arguments. We can do this by two means. Assuming
+the following procedures.
+#+BEGIN_SRC racket :lang sicp
+  (define (square a) (* a a))
+  (define (sum-of-squares a b) (+ (square a) (square b)))
+  (define (f a) (sum-of-squares (+ a 1) (* a 2)))
+#+END_SRC
+**** Applicative order
+Evaluate the arguments then apply, the method the interpreter
+actually uses.
+#+BEGIN_SRC racket :lang sicp
+  ;; When we evaluate
+  (f 5)
+  ;; The reductions are as follows
+  (sum-of-squares (+ 5 1) (* 5 2))
+  (+ (square 6) (square 10))
+  (+ (* 6 6) (* 10 10))
+  (+ 36 100)
+  136
+#+END_SRC
+**** Normal order
+Fully expand then reduce, an alternative method.
+#+BEGIN_SRC racket :lang sicp
+  ;; When we evaluate
+  (f 5)
+  ;; We expand everything
+  (sum-of-squares (+ 5 1) (* 5 2))
+  (+ (square (+ 5 1)) (square (* 5 2)))
+  (+ (* (+ 5 1) (+ 5 1)) (* (* 5 2) (* 5 2)))
+  ;; Then reduce
+  (+ (* 6 6) (* 10 10))
+  (+ 36 100)
+  136
+#+END_SRC
+** Procedures and the processes they generate
+*** Linear recursion and iteration
+**** Recursive processes
+Consider:
+#+BEGIN_SRC racket :lang sicp
+  (define (factorial n)
+    (if (= n 1)
+        1
+        (* n (factorial (n-1)))))
+#+END_SRC
+If we apply the substitution model we end up with:
+#+BEGIN_SRC racket :lang sicp
+  (factorial 4)
+  (* 4 (factorial 3))
+  (* 4 (* 3 (factorial 2)))
+  (* 4 (* 3 (* 2 (factorial 1))))
+  (* 4 (* 3 (* 2 1)))
+  (* 4 (* 3 2))
+  (* 4 6)
+#+END_SRC
+We can observe the process expands and reduces as it's evaluating the
+expressions, the state is held within the chain of deferred
+operations, this is a /recursive process/, since the number of
+expansions and reductions grows linearly with n, this is called a
+/linear recursive process/.
+**** Iterative processes
+Now consider the following:
+#+BEGIN_SRC racket :lang sicp
+  (define (factorial n)
+    (fact-iter 1 1 n))
+  (define (fact-iter product counter max-count)
+    (if (> counter max-count)
+        product
+        (fact-iter (* counter product)
+                   (+ counter 1)
+                   max-count))
+#+END_SRC
+It grows like so:
+#+BEGIN_SRC racket :lang sicp
+  (factorial 4)
+  (fact-iter 1 1 4)
+  (fact-iter 1 2 4)
+  (fact-iter 2 3 4)
+  (fact-iter 6 4 4)
+  (fact-iter 24 5 4)
+  24
+#+END_SRC
+This does not grow and shrink, all the state is contained within the
+arguments to the procedures, we could stop and resume the chain at any
+point in time if we count with the right arguments to pass to the
+parameters.
+*** Tree Recursion
+Consider:
+#+BEGIN_SRC racket :lang sicp
+  (define (fib n)
+    (cond ((=n 0) 0)
+          ((= n 1) 1)
+          (else (+ (fib (- n 1))
+                   (fib (- n 2))))))
+#+END_SRC
+It evolves like this
+#+BEGIN_SRC racket :lang sicp
+                                 (fib 4)
+                  (+ (fib 3)               (fib 2))
+          (+ (+ (fib 2) (fib 1))     (+ (fib 1) (fib 0)))
+  (+ (+ (+ (fib 1) (fib 0)) (fib 1)) (+ (fib 1) (fib 0)))
+  (+ (+ (+    1       0   )    1   ) (+    1       0))
+
+#+END_SRC
+The process evolves into a tree of calls to different procedures, hence
+it's name.
