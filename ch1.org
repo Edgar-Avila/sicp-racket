@@ -254,3 +254,66 @@ repeatedly until the value does not change very much (a tolerance)
     (fixed-point (lambda (y) (average y (/ x y)))
                  1.0))
 #+END_SRC
+*** Procedures as returned values
+The average damping used in /sqrt/ is useful in general, we can
+abstract that by returning it as a procedure.
+#+BEGIN_SRC racket :lang sicp
+  (define (average-damp f)
+    (lambda (x) (average x (f x))))
+  ;; We can redefine sqrt in term of this,
+  ;; now the idea that we're really using the average damp
+  ;; is explicit.
+  (define (sqrt x)
+    (fixed-point (average-damp (lambda (y) (/ x y)))
+                 1.0))
+  ;; We can reuse ideas easily
+  (define (cube-root x)
+    (fixed-point (average-damp (lambda (y) (/ x (square y))))
+                 1.0))
+#+END_SRC
+We could for example approximate the derivative of a function \(g(x)\), the derivative
+is given (in the limit of a small \(dx\)) by:
+\[Dg(x)=\frac{g(x+dx)-g(x)}{dx}\]
+Thus, we can convert this function into the following procedure:
+#+BEGIN_SRC racket :lang sicp
+  (define dx 0.00001)
+  (define (deriv g)
+    (lambda (x) (/ (- (g (+ x dx)) (g x)) dx)))
+  ;; We can derive a function
+  (define (cube x) (* x x x))
+  ;; Dg(x) = 3(x^2)
+  ;; Dg(5) = 3(5^2) = 75
+  ((deriv cube) t) ;; 75.0001499...
+#+END_SRC
+We can use this to represent Newton's method, which is a way of finding the roots
+of an equation. Newton's method states that if \(g(x)\) is a differentiable function,
+a solution to the equation \(g(x) = 0\) is a fixed point of the function \(f(x)\) where
+\[f(x) = x - \frac{g(x)}{Dg(x)}\]
+Thus, we can express this as
+#+BEGIN_SRC racket :lang sicp
+  (define (newton-transform g)
+    (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+  (define (newtons-method g guess)
+    (fixed-point (newton-transform g) guess))
+#+END_SRC
+Then, we can redefine /sqrt/ once again, since what we did before was just a special
+case of Newton's method.
+#+BEGIN_SRC racket :lang sicp
+  (define (sqrt x)
+    (newtons-method
+     (lambda (y) (- (square y) x)) 1.0))
+#+END_SRC
+*** Abstractions and first-class procedures
+We've seen how higher-order procedures allow us to represent
+abstractions explicity as elements, so that they can be haldled just
+like any other computational elements.  In general, programming
+languages impose restrictions on the ways in which computational
+elements can be manipulated. Elements with the fewest restrictions are
+said to have first-class status. Some of the "rights and privileges"
+of first-class elements are:
+- They may be named by variables
+- They may be passed as arguments to procedures
+- They may be returned as the results of procedures
+- They may be included in data structures
+Lisp awards procedures full first-class status, allowing for the
+expressiveness described before.
