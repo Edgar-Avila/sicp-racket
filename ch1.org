@@ -1,11 +1,11 @@
-* Building Abstractions with Procedures
+#+STARTUP: latexpreview
 
+* Building Abstractions with Procedures
 ** The elements of programming
-We can combine simple ideas into complex one using this:
+We can combine simple ideas into a complex one using this:
 - Primitive expressions: Simplest entities the language is concerned with
 - Means of combination: Compound elements built from simpler ones
 - Means of abstraction: How compound elements can be named and manipulated as units
-
 *** The substitution model
 The interpreter evaluates the element of the combination and applies
 the procedure to the arguments. We can do this by two means. Assuming
@@ -15,7 +15,7 @@ the following procedures.
   (define (sum-of-squares a b) (+ (square a) (square b)))
   (define (f a) (sum-of-squares (+ a 1) (* a 2)))
 #+END_SRC
-**** Applicative order
+*** Applicative order
 Evaluate the arguments then apply, the method the interpreter
 actually uses.
 #+BEGIN_SRC racket :lang sicp
@@ -28,7 +28,7 @@ actually uses.
   (+ 36 100)
   136
 #+END_SRC
-**** Normal order
+*** Normal order
 Fully expand then reduce, an alternative method.
 #+BEGIN_SRC racket :lang sicp
   ;; When we evaluate
@@ -43,8 +43,7 @@ Fully expand then reduce, an alternative method.
   136
 #+END_SRC
 ** Procedures and the processes they generate
-*** Linear recursion and iteration
-**** Recursive processes
+*** Recursive processes
 Consider:
 #+BEGIN_SRC racket :lang sicp
   (define (factorial n)
@@ -67,7 +66,7 @@ expressions, the state is held within the chain of deferred
 operations, this is a /recursive process/, since the number of
 expansions and reductions grows linearly with n, this is called a
 /linear recursive process/.
-**** Iterative processes
+*** Iterative processes
 Now consider the following:
 #+BEGIN_SRC racket :lang sicp
   (define (factorial n)
@@ -113,3 +112,145 @@ It evolves like this
 #+END_SRC
 The process evolves into a tree of calls to different procedures, hence
 it's name.
+*** Orders of Growth
+\(R(n)\) has an order of growth \(
+R(n)=\Theta(f(n))
+\) if there are positive
+constants \(k_1\) and \(k_2\) independent of n such that:
+\begin{equation}
+k_1f(n) \le R(n) \le k_2f(n)
+\end{equation}
+
+The order of growth only provides a crude description of the behavior
+of the process, a process with \(n^2\) steps and a process with
+\(1000n^2\) steps will all have \(theta(n^2)\) order of growth.
+
+** Formulating abstractions with higher-order procedures
+*** Procedures as arguments
+Procedures that manipulate procedures are called higher-order procedures,
+they are useful when the same programming pattern is used
+with a number of different procedures.
+For example, the following can abstract the pattern of "summing"
+numbers, and we can use it to create new procedures that
+sum cubes, integers, etc.
+#+BEGIN_SRC racket :lang sicp
+  (define (identity (a) a))
+  (define (square a) (* a a))
+  (define (cube a) (* a a a))
+  (define (1+ a) (+ a 1))
+  (define (sum term a next b)
+    (if (> a b)
+        0
+        (+ (term a)
+           (sum term (next a) next b)))
+  (define (sum-cubes a b)
+    (sum cube a 1+ b))
+  (define (sum-squares a b)
+    (sum square a 1+ b))
+  (define (sum-ints a b)
+    (sum identity a 1+ b))
+#+END_SRC
+*** Procedures using lambda
+For trivial procedures, it's often more convenient to directly
+specify them without any names, rather than defining them. This
+is what lambdas are for, really useful when passing them as
+arguments to higher-order procedures.
+#+BEGIN_SRC racket :lang sicp
+  (define (sum-cubes a b)
+    (sum (lambda (x) (* x x x)) a 1+ b))
+  (define (sum-squares a b)
+    (sum (lambda (x) (* x x) a 1+ b))
+  (define (sum-ints a b)
+    (sum (lambda (x) x) a 1+ b))
+#+END_SRC
+*** Using let to create local variables
+Imagine we wanted to express:
+\[f(x,y)=x(1+xy)^2+y(1-y)+(1+xy)(1-y)\]
+Which could be also expressed as:
+\[a=1+xy\]
+\[b=1-y\]
+\[f(x,y)=xa^2+yb+ab\]
+We could do:
+#+BEGIN_SRC racket :lang sicp
+  (define (f x y)
+    (define (f-helper a b)
+      (+ (* x (square a))
+         (* y b)
+         (* a b)))
+    (f-helper (+ 1 (* x y))
+              (- 1 y)))
+#+END_SRC
+Which binds a and b to the computed values before applying
+the rest of the procedure, but it's somewhat inconvenient,
+for this, we can use the special form called /let/.
+#+BEGIN_SRC racket :lang sicp
+  (define (f x y)
+    (let ((a (+ 1 (* x y)))
+          ( b (- 1 y)))
+      (+ (* x (square a))
+         (* y b)
+         (* a b))))
+#+END_SRC
+*** Finding roots of equations by the half-interfal method
+The half-interval method is a technique for finding the roots
+of an equation \(f(x)=0\), where \(f\) is a continuous function and
+we count with points \(a\) and \(b\) such that \(f(a) < 0 < f(b)\),
+we do this by averaging \(a\) and \(b\) many times, reducing
+the interval we're searching on each time. (We're basically binary
+searching).
+#+BEGIN_SRC racket :lang sicp
+  ;; Helper for the tolerance
+  (define (close-enough? x y)
+    (< (abs (- x y)) 0.001))
+  ;; Actual search
+  (define (search f neg-point pos-point)
+    (let ((midpoint (average neg-point pos-point)))
+      (if (close-enough? neg-point pos-point)
+          midpoint
+          (let ((test-value (f midpoint)))
+            (cond ((positive? test-value)
+                   (search f neg-point midpoint))
+                  ((negative? test-value)
+                   (search f midpoint pos-point))
+                  (else midpoint))))))
+  ;; Checks if they're actually of opposite signs
+  ;; and picks on which value passed is the negative
+  ;; one and the positive one in order to pass
+  ;; them correctly to search
+  (define (half-interval-method f a b)
+    (let ((a-value (f a))
+          (b-value (f b)))
+      (cond ((and (negative? a-value) (positive? b-value))
+             (search f a b))
+            ((and (negative? b-value) (positive? a-value))
+             (search f b a))
+            (else
+             (error "Valeus are not of opposite sign" a b)))))
+  ;; We can then use it to approximate pi
+  ;; (pi is the point where sin(x) = 0)
+  (half-interval-method sin 2.0 4.0) ;; 3.14111328125
+#+END_SRC
+*** Finding fixed points of functions
+A number \(x\) is the /fixed point/ of a function if \(f(x) = x\), for
+some functions we can find this with an initial guess and applying \(f\)
+repeatedly until the value does not change very much (a tolerance)
+\[f(x), f(f(x)), f(f(f(x))), ...,\]
+#+BEGIN_SRC racket :lang sicp
+  (define tolerance 0.00001)
+  (define (fixed-point f first-guess)
+    (define (close-enough? v1 v2)
+      (< (abs (- v1 v2))
+         tolerance))
+    (define (try guess)
+      (let ((next (f guess)))
+        (if (close-enough? guess next)
+            next
+            (try next))))
+    (try first-guess))
+  ;; Trying it on cos
+  (fixed-point cos 1.0)
+  ;; We can even define a sqrt function in terms of this
+  (define (sqrt x)
+    (fixed-point (lambda (y) (average y (/ x y)))
+                 1.0))
+#+END_SRC

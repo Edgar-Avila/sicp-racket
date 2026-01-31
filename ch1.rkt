@@ -23,6 +23,12 @@
 (define (1- a)
   (- a 1))
 
+(define (double a)
+  (* a 2))
+
+(define (halve a)
+  (/ a 2))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.3
 ;; Procedure to add the two larger nums
@@ -223,3 +229,51 @@
 (build-pascal 1) ;; ((1 1) (1))
 (build-pascal 2) ;; ((1 2 1) (1 1) (1))
 (build-pascal 3) ;; ((1 3 3 1) (1 2 1) (1 1) (1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.16
+;; Design a prodedure that evolves an iterative exponentiation process
+;; that uses successive squaring
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (sq-expt a b n)
+  (cond ((= n 0) a)
+        ((even? n) (sq-expt a (* b b) (/ n 2))) 
+        (else (sq-expt (* a b) b (- n 1)))))
+
+(sq-expt 1 2 10) ;; 1024
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.17
+;; Design a prodedure that multiplies two numbers and is analogous to fast-exp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; when b is 1 (* a b) = a
+;; when b is even (* a b) = (* (double a) (halve b))
+;; when b is odd (* a b) = (+ a (* a (1- b)))
+(define (fast-mult a b)
+  (cond ((= b 1) a)
+        ((even? b) (fast-mult (double a) (halve b)))
+        (else (+ a (fast-mult a (1- b))))))
+
+(fast-mult 3 4) ;; 12
+(fast-mult 5 5) ;; 25
+(fast-mult 8 8) ;; 64
+(fast-mult 4 3) ;; 12
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.18
+;; Using the results of 1.16 and 1.18, devise a procedure that
+;; multiples two integers iteratively in term of adding, doubling and halving
+;; and uses a logarithmic number of steps
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (fast-mult-iter x y)
+  (define (inner a b c)
+    (cond ((= b 0) c)
+          ((even? b) (inner (double a) (halve b) c))
+          (else (inner a (1- b) (+ c a)))))
+  (inner x y 0))
+
+(fast-mult-iter 3 4) ;; 12
+(fast-mult-iter 5 5) ;; 25
+(fast-mult-iter 8 8) ;; 64
+(fast-mult-iter 4 3) ;; 12
