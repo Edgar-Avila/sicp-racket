@@ -1,4 +1,4 @@
-% Created 2026-01-30 Fri 21:22
+% Created 2026-01-31 Sat 13:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -29,9 +29,9 @@
 
 
 \section{Building Abstractions with Procedures}
-\label{sec:org62d04d5}
+\label{sec:org942129f}
 \subsection{The elements of programming}
-\label{sec:org9fe94b8}
+\label{sec:org9623d5e}
 We can combine simple ideas into a complex one using this:
 \begin{itemize}
 \item Primitive expressions: Simplest entities the language is concerned with
@@ -39,7 +39,7 @@ We can combine simple ideas into a complex one using this:
 \item Means of abstraction: How compound elements can be named and manipulated as units
 \end{itemize}
 \subsubsection{The substitution model}
-\label{sec:org79a39e7}
+\label{sec:org41a8efd}
 The interpreter evaluates the element of the combination and applies
 the procedure to the arguments. We can do this by two means. Assuming
 the following procedures.
@@ -49,7 +49,7 @@ the following procedures.
 (define (f a) (sum-of-squares (+ a 1) (* a 2)))
 \end{verbatim}
 \subsubsection{Applicative order}
-\label{sec:orgf01f153}
+\label{sec:org78a75e3}
 Evaluate the arguments then apply, the method the interpreter
 actually uses.
 \begin{verbatim}
@@ -63,7 +63,7 @@ actually uses.
 136
 \end{verbatim}
 \subsubsection{Normal order}
-\label{sec:org7e8bddd}
+\label{sec:org8fb59bc}
 Fully expand then reduce, an alternative method.
 \begin{verbatim}
 ;; When we evaluate
@@ -78,9 +78,9 @@ Fully expand then reduce, an alternative method.
 136
 \end{verbatim}
 \subsection{Procedures and the processes they generate}
-\label{sec:orge2ab651}
+\label{sec:org600a95a}
 \subsubsection{Recursive processes}
-\label{sec:org36cd94a}
+\label{sec:org227265d}
 Consider:
 \begin{verbatim}
 (define (factorial n)
@@ -104,7 +104,7 @@ operations, this is a \emph{recursive process}, since the number of
 expansions and reductions grows linearly with n, this is called a
 \emph{linear recursive process}.
 \subsubsection{Iterative processes}
-\label{sec:org2c9c521}
+\label{sec:org10b70aa}
 Now consider the following:
 \begin{verbatim}
 (define (factorial n)
@@ -131,7 +131,7 @@ arguments to the procedures, we could stop and resume the chain at any
 point in time if we count with the right arguments to pass to the
 parameters.
 \subsubsection{Tree Recursion}
-\label{sec:orgba00d20}
+\label{sec:orgdb814b8}
 Consider:
 \begin{verbatim}
 (define (fib n)
@@ -152,7 +152,7 @@ It evolves like this
 The process evolves into a tree of calls to different procedures, hence
 it's name.
 \subsubsection{Orders of Growth}
-\label{sec:orge81547e}
+\label{sec:org07f0f20}
 \(R(n)\) has an order of growth \(R(n)=\Theta(f(n))\) if there are positive
 constants \(k_1\) and \(k_2\) independent of n such that:
 \begin{equation}
@@ -164,9 +164,9 @@ of the process, a process with \(n^2\) steps and a process with
 \(1000n^2\) steps will all have \(theta(n^2)\) order of growth.
 
 \subsection{Formulating abstractions with higher-order procedures}
-\label{sec:org20bd01a}
+\label{sec:org507d98f}
 \subsubsection{Procedures as arguments}
-\label{sec:org8dd0f54}
+\label{sec:org2c11d21}
 Procedures that manipulate procedures are called higher-order procedures,
 they are useful when the same programming pattern is used
 with a number of different procedures.
@@ -191,7 +191,7 @@ sum cubes, integers, etc.
   (sum identity a 1+ b))
 \end{verbatim}
 \subsubsection{Procedures using lambda}
-\label{sec:org0f948e5}
+\label{sec:orge10c111}
 For trivial procedures, it's often more convenient to directly
 specify them without any names, rather than defining them. This
 is what lambdas are for, really useful when passing them as
@@ -205,7 +205,7 @@ arguments to higher-order procedures.
   (sum (lambda (x) x) a 1+ b))
 \end{verbatim}
 \subsubsection{Using let to create local variables}
-\label{sec:org04f87f4}
+\label{sec:org0ccbef1}
 Imagine we wanted to express:
 \[f(x,y)=x(1+xy)^2+y(1-y)+(1+xy)(1-y)\]
 Which could be also expressed as:
@@ -234,7 +234,7 @@ for this, we can use the special form called \emph{let}.
        (* a b))))
 \end{verbatim}
 \subsubsection{Finding roots of equations by the half-interfal method}
-\label{sec:orgecaf9b6}
+\label{sec:org10f8eb7}
 The half-interval method is a technique for finding the roots
 of an equation \(f(x)=0\), where \(f\) is a continuous function and
 we count with points \(a\) and \(b\) such that \(f(a) < 0 < f(b)\),
@@ -274,7 +274,7 @@ searching).
 (half-interval-method sin 2.0 4.0) ;; 3.14111328125
 \end{verbatim}
 \subsubsection{Finding fixed points of functions}
-\label{sec:orgc5558c1}
+\label{sec:org2562b3e}
 A number \(x\) is the \emph{fixed point} of a function if \(f(x) = x\), for
 some functions we can find this with an initial guess and applying \(f\)
 repeatedly until the value does not change very much (a tolerance)
@@ -298,4 +298,71 @@ repeatedly until the value does not change very much (a tolerance)
   (fixed-point (lambda (y) (average y (/ x y)))
                1.0))
 \end{verbatim}
+\subsubsection{Procedures as returned values}
+\label{sec:orgcdbdbaf}
+The average damping used in \emph{sqrt} is useful in general, we can
+abstract that by returning it as a procedure.
+\begin{verbatim}
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+;; We can redefine sqrt in term of this,
+;; now the idea that we're really using the average damp
+;; is explicit.
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+;; We can reuse ideas easily
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+               1.0))
+\end{verbatim}
+We could for example approximate the derivative of a function \(g(x)\), the derivative
+is given (in the limit of a small \(dx\)) by:
+\[Dg(x)=\frac{g(x+dx)-g(x)}{dx}\]
+Thus, we can convert this function into the following procedure:
+\begin{verbatim}
+(define dx 0.00001)
+(define (deriv g)
+  (lambda (x) (/ (- (g (+ x dx)) (g x)) dx)))
+;; We can derive a function
+(define (cube x) (* x x x))
+;; Dg(x) = 3(x^2)
+;; Dg(5) = 3(5^2) = 75
+((deriv cube) t) ;; 75.0001499...
+\end{verbatim}
+We can use this to represent Newton's method, which is a way of finding the roots
+of an equation. Newton's method states that if \(g(x)\) is a differentiable function,
+a solution to the equation \(g(x) = 0\) is a fixed point of the function \(f(x)\) where
+\[f(x) = x - \frac{g(x)}{Dg(x)}\]
+Thus, we can express this as
+\begin{verbatim}
+(define (newton-transform g)
+  (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+\end{verbatim}
+Then, we can redefine \emph{sqrt} once again, since what we did before was just a special
+case of Newton's method.
+\begin{verbatim}
+(define (sqrt x)
+  (newtons-method
+   (lambda (y) (- (square y) x)) 1.0))
+\end{verbatim}
+\subsubsection{Abstractions and first-class procedures}
+\label{sec:org4aa53a8}
+We've seen how higher-order procedures allow us to represent
+abstractions explicity as elements, so that they can be haldled just
+like any other computational elements.  In general, programming
+languages impose restrictions on the ways in which computational
+elements can be manipulated. Elements with the fewest restrictions are
+said to have first-class status. Some of the "rights and privileges"
+of first-class elements are:
+\begin{itemize}
+\item They may be named by variables
+\item They may be passed as arguments to procedures
+\item They may be returned as the results of procedures
+\item They may be included in data structures
+\end{itemize}
+Lisp awards procedures full first-class status, allowing for the
+expressiveness described before.
 \end{document}

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-01-30 Fri 21:22 -->
+<!-- 2026-01-31 Sat 13:51 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Notes on SICP</title>
@@ -233,30 +233,32 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org156a6ed">1. Building Abstractions with Procedures</a>
+<li><a href="#org0e79e98">1. Building Abstractions with Procedures</a>
 <ul>
-<li><a href="#orgd6e6efc">1.1. The elements of programming</a>
+<li><a href="#org215fb63">1.1. The elements of programming</a>
 <ul>
-<li><a href="#org0631866">1.1.1. The substitution model</a></li>
-<li><a href="#org074c95d">1.1.2. Applicative order</a></li>
-<li><a href="#org9efa9ae">1.1.3. Normal order</a></li>
+<li><a href="#orgbb44371">1.1.1. The substitution model</a></li>
+<li><a href="#org07f99ac">1.1.2. Applicative order</a></li>
+<li><a href="#org57231d9">1.1.3. Normal order</a></li>
 </ul>
 </li>
-<li><a href="#orgc0ce7d3">1.2. Procedures and the processes they generate</a>
+<li><a href="#org33f7277">1.2. Procedures and the processes they generate</a>
 <ul>
-<li><a href="#orga52ace4">1.2.1. Recursive processes</a></li>
-<li><a href="#org16bb263">1.2.2. Iterative processes</a></li>
-<li><a href="#org562ac82">1.2.3. Tree Recursion</a></li>
-<li><a href="#org30adf16">1.2.4. Orders of Growth</a></li>
+<li><a href="#org5f5a4fb">1.2.1. Recursive processes</a></li>
+<li><a href="#org6d6c2fb">1.2.2. Iterative processes</a></li>
+<li><a href="#orgf80bf01">1.2.3. Tree Recursion</a></li>
+<li><a href="#orgeee43a4">1.2.4. Orders of Growth</a></li>
 </ul>
 </li>
-<li><a href="#org2e6181c">1.3. Formulating abstractions with higher-order procedures</a>
+<li><a href="#org794b5c3">1.3. Formulating abstractions with higher-order procedures</a>
 <ul>
-<li><a href="#org1f47a81">1.3.1. Procedures as arguments</a></li>
-<li><a href="#orge64a142">1.3.2. Procedures using lambda</a></li>
-<li><a href="#org7bb1781">1.3.3. Using let to create local variables</a></li>
-<li><a href="#orgbd8c5e3">1.3.4. Finding roots of equations by the half-interfal method</a></li>
-<li><a href="#orgcf47a4d">1.3.5. Finding fixed points of functions</a></li>
+<li><a href="#org84fe3d0">1.3.1. Procedures as arguments</a></li>
+<li><a href="#org5fcd495">1.3.2. Procedures using lambda</a></li>
+<li><a href="#org36ddf4e">1.3.3. Using let to create local variables</a></li>
+<li><a href="#orgb86d409">1.3.4. Finding roots of equations by the half-interfal method</a></li>
+<li><a href="#orgabfa269">1.3.5. Finding fixed points of functions</a></li>
+<li><a href="#org235f064">1.3.6. Procedures as returned values</a></li>
+<li><a href="#orga6f3f71">1.3.7. Abstractions and first-class procedures</a></li>
 </ul>
 </li>
 </ul>
@@ -265,12 +267,12 @@
 </div>
 </div>
 
-<div id="outline-container-org156a6ed" class="outline-2">
-<h2 id="org156a6ed"><span class="section-number-2">1.</span> Building Abstractions with Procedures</h2>
+<div id="outline-container-org0e79e98" class="outline-2">
+<h2 id="org0e79e98"><span class="section-number-2">1.</span> Building Abstractions with Procedures</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orgd6e6efc" class="outline-3">
-<h3 id="orgd6e6efc"><span class="section-number-3">1.1.</span> The elements of programming</h3>
+<div id="outline-container-org215fb63" class="outline-3">
+<h3 id="org215fb63"><span class="section-number-3">1.1.</span> The elements of programming</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 We can combine simple ideas into a complex one using this:
@@ -281,8 +283,8 @@ We can combine simple ideas into a complex one using this:
 <li>Means of abstraction: How compound elements can be named and manipulated as units</li>
 </ul>
 </div>
-<div id="outline-container-org0631866" class="outline-4">
-<h4 id="org0631866"><span class="section-number-4">1.1.1.</span> The substitution model</h4>
+<div id="outline-container-orgbb44371" class="outline-4">
+<h4 id="orgbb44371"><span class="section-number-4">1.1.1.</span> The substitution model</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 The interpreter evaluates the element of the combination and applies
@@ -297,8 +299,8 @@ the following procedures.
 </div>
 </div>
 </div>
-<div id="outline-container-org074c95d" class="outline-4">
-<h4 id="org074c95d"><span class="section-number-4">1.1.2.</span> Applicative order</h4>
+<div id="outline-container-org07f99ac" class="outline-4">
+<h4 id="org07f99ac"><span class="section-number-4">1.1.2.</span> Applicative order</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 Evaluate the arguments then apply, the method the interpreter
@@ -317,8 +319,8 @@ actually uses.
 </div>
 </div>
 </div>
-<div id="outline-container-org9efa9ae" class="outline-4">
-<h4 id="org9efa9ae"><span class="section-number-4">1.1.3.</span> Normal order</h4>
+<div id="outline-container-org57231d9" class="outline-4">
+<h4 id="org57231d9"><span class="section-number-4">1.1.3.</span> Normal order</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 Fully expand then reduce, an alternative method.
@@ -339,12 +341,12 @@ Fully expand then reduce, an alternative method.
 </div>
 </div>
 </div>
-<div id="outline-container-orgc0ce7d3" class="outline-3">
-<h3 id="orgc0ce7d3"><span class="section-number-3">1.2.</span> Procedures and the processes they generate</h3>
+<div id="outline-container-org33f7277" class="outline-3">
+<h3 id="org33f7277"><span class="section-number-3">1.2.</span> Procedures and the processes they generate</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-orga52ace4" class="outline-4">
-<h4 id="orga52ace4"><span class="section-number-4">1.2.1.</span> Recursive processes</h4>
+<div id="outline-container-org5f5a4fb" class="outline-4">
+<h4 id="org5f5a4fb"><span class="section-number-4">1.2.1.</span> Recursive processes</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 Consider:
@@ -378,8 +380,8 @@ expansions and reductions grows linearly with n, this is called a
 </p>
 </div>
 </div>
-<div id="outline-container-org16bb263" class="outline-4">
-<h4 id="org16bb263"><span class="section-number-4">1.2.2.</span> Iterative processes</h4>
+<div id="outline-container-org6d6c2fb" class="outline-4">
+<h4 id="org6d6c2fb"><span class="section-number-4">1.2.2.</span> Iterative processes</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 Now consider the following:
@@ -416,8 +418,8 @@ parameters.
 </p>
 </div>
 </div>
-<div id="outline-container-org562ac82" class="outline-4">
-<h4 id="org562ac82"><span class="section-number-4">1.2.3.</span> Tree Recursion</h4>
+<div id="outline-container-orgf80bf01" class="outline-4">
+<h4 id="orgf80bf01"><span class="section-number-4">1.2.3.</span> Tree Recursion</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 Consider:
@@ -448,8 +450,8 @@ it's name.
 </p>
 </div>
 </div>
-<div id="outline-container-org30adf16" class="outline-4">
-<h4 id="org30adf16"><span class="section-number-4">1.2.4.</span> Orders of Growth</h4>
+<div id="outline-container-orgeee43a4" class="outline-4">
+<h4 id="orgeee43a4"><span class="section-number-4">1.2.4.</span> Orders of Growth</h4>
 <div class="outline-text-4" id="text-1-2-4">
 <p>
 \(R(n)\) has an order of growth \(
@@ -470,12 +472,12 @@ of the process, a process with \(n^2\) steps and a process with
 </div>
 </div>
 
-<div id="outline-container-org2e6181c" class="outline-3">
-<h3 id="org2e6181c"><span class="section-number-3">1.3.</span> Formulating abstractions with higher-order procedures</h3>
+<div id="outline-container-org794b5c3" class="outline-3">
+<h3 id="org794b5c3"><span class="section-number-3">1.3.</span> Formulating abstractions with higher-order procedures</h3>
 <div class="outline-text-3" id="text-1-3">
 </div>
-<div id="outline-container-org1f47a81" class="outline-4">
-<h4 id="org1f47a81"><span class="section-number-4">1.3.1.</span> Procedures as arguments</h4>
+<div id="outline-container-org84fe3d0" class="outline-4">
+<h4 id="org84fe3d0"><span class="section-number-4">1.3.1.</span> Procedures as arguments</h4>
 <div class="outline-text-4" id="text-1-3-1">
 <p>
 Procedures that manipulate procedures are called higher-order procedures,
@@ -505,8 +507,8 @@ sum cubes, integers, etc.
 </div>
 </div>
 </div>
-<div id="outline-container-orge64a142" class="outline-4">
-<h4 id="orge64a142"><span class="section-number-4">1.3.2.</span> Procedures using lambda</h4>
+<div id="outline-container-org5fcd495" class="outline-4">
+<h4 id="org5fcd495"><span class="section-number-4">1.3.2.</span> Procedures using lambda</h4>
 <div class="outline-text-4" id="text-1-3-2">
 <p>
 For trivial procedures, it's often more convenient to directly
@@ -525,8 +527,8 @@ arguments to higher-order procedures.
 </div>
 </div>
 </div>
-<div id="outline-container-org7bb1781" class="outline-4">
-<h4 id="org7bb1781"><span class="section-number-4">1.3.3.</span> Using let to create local variables</h4>
+<div id="outline-container-org36ddf4e" class="outline-4">
+<h4 id="org36ddf4e"><span class="section-number-4">1.3.3.</span> Using let to create local variables</h4>
 <div class="outline-text-4" id="text-1-3-3">
 <p>
 Imagine we wanted to express:
@@ -563,8 +565,8 @@ for this, we can use the special form called <i>let</i>.
 </div>
 </div>
 </div>
-<div id="outline-container-orgbd8c5e3" class="outline-4">
-<h4 id="orgbd8c5e3"><span class="section-number-4">1.3.4.</span> Finding roots of equations by the half-interfal method</h4>
+<div id="outline-container-orgb86d409" class="outline-4">
+<h4 id="orgb86d409"><span class="section-number-4">1.3.4.</span> Finding roots of equations by the half-interfal method</h4>
 <div class="outline-text-4" id="text-1-3-4">
 <p>
 The half-interval method is a technique for finding the roots
@@ -609,8 +611,8 @@ searching).
 </div>
 </div>
 </div>
-<div id="outline-container-orgcf47a4d" class="outline-4">
-<h4 id="orgcf47a4d"><span class="section-number-4">1.3.5.</span> Finding fixed points of functions</h4>
+<div id="outline-container-orgabfa269" class="outline-4">
+<h4 id="orgabfa269"><span class="section-number-4">1.3.5.</span> Finding fixed points of functions</h4>
 <div class="outline-text-4" id="text-1-3-5">
 <p>
 A number \(x\) is the <i>fixed point</i> of a function if \(f(x) = x\), for
@@ -640,12 +642,101 @@ repeatedly until the value does not change very much (a tolerance)
 </div>
 </div>
 </div>
+<div id="outline-container-org235f064" class="outline-4">
+<h4 id="org235f064"><span class="section-number-4">1.3.6.</span> Procedures as returned values</h4>
+<div class="outline-text-4" id="text-1-3-6">
+<p>
+The average damping used in <i>sqrt</i> is useful in general, we can
+abstract that by returning it as a procedure.
+</p>
+<div class="org-src-container">
+<pre class="src src-racket">(define (average-damp f)
+  (lambda (x) (average x (f x))))
+;; We can redefine sqrt in term of this,
+;; now the idea that we're really using the average damp
+;; is explicit.
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+;; We can reuse ideas easily
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+               1.0))
+</pre>
+</div>
+<p>
+We could for example approximate the derivative of a function \(g(x)\), the derivative
+is given (in the limit of a small \(dx\)) by:
+\[Dg(x)=\frac{g(x+dx)-g(x)}{dx}\]
+Thus, we can convert this function into the following procedure:
+</p>
+<div class="org-src-container">
+<pre class="src src-racket">(define dx 0.00001)
+(define (deriv g)
+  (lambda (x) (/ (- (g (+ x dx)) (g x)) dx)))
+;; We can derive a function
+(define (cube x) (* x x x))
+;; Dg(x) = 3(x^2)
+;; Dg(5) = 3(5^2) = 75
+((deriv cube) t) ;; 75.0001499...
+</pre>
+</div>
+<p>
+We can use this to represent Newton's method, which is a way of finding the roots
+of an equation. Newton's method states that if \(g(x)\) is a differentiable function,
+a solution to the equation \(g(x) = 0\) is a fixed point of the function \(f(x)\) where
+\[f(x) = x - \frac{g(x)}{Dg(x)}\]
+Thus, we can express this as
+</p>
+<div class="org-src-container">
+<pre class="src src-racket">(define (newton-transform g)
+  (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+</pre>
+</div>
+<p>
+Then, we can redefine <i>sqrt</i> once again, since what we did before was just a special
+case of Newton's method.
+</p>
+<div class="org-src-container">
+<pre class="src src-racket">(define (sqrt x)
+  (newtons-method
+   (lambda (y) (- (square y) x)) 1.0))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga6f3f71" class="outline-4">
+<h4 id="orga6f3f71"><span class="section-number-4">1.3.7.</span> Abstractions and first-class procedures</h4>
+<div class="outline-text-4" id="text-1-3-7">
+<p>
+We've seen how higher-order procedures allow us to represent
+abstractions explicity as elements, so that they can be haldled just
+like any other computational elements.  In general, programming
+languages impose restrictions on the ways in which computational
+elements can be manipulated. Elements with the fewest restrictions are
+said to have first-class status. Some of the "rights and privileges"
+of first-class elements are:
+</p>
+<ul class="org-ul">
+<li>They may be named by variables</li>
+<li>They may be passed as arguments to procedures</li>
+<li>They may be returned as the results of procedures</li>
+<li>They may be included in data structures</li>
+</ul>
+<p>
+Lisp awards procedures full first-class status, allowing for the
+expressiveness described before.
+</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: stack</p>
-<p class="date">Created: 2026-01-30 Fri 21:22</p>
+<p class="date">Created: 2026-01-31 Sat 13:51</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

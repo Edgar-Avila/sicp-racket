@@ -1,4 +1,4 @@
-#+TITLE: Notes on SICP
 #+STARTUP: latexpreview
+#+TITLE: Notes on SICP
 
 #+INCLUDE: "./ch1.org" :minlevel 1
